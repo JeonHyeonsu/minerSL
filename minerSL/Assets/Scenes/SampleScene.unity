@@ -5648,7 +5648,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.7253471, g: 0.81014395, b: 0.9433962, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -5665,7 +5665,7 @@ Camera:
   far clip plane: 1000
   field of view: 60
   orthographic: 1
-  orthographic size: 5
+  orthographic size: 20
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
@@ -5725,14 +5725,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5eba48db848d148758433425ad0e016a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  tile: {fileID: 1921895609169914298, guid: 157cbc340d2b7e64ab85168e80e95550, type: 3}
+  dirtLayerHeight: 5
+  grass: {fileID: 21300000, guid: f0d8d0031d58946c9a891c328fc9fc97, type: 3}
+  dirt: {fileID: 21300000, guid: 80e17dc1aa5be40d2afe87b07320241f, type: 3}
+  stone: {fileID: 21300000, guid: 9bd8f7b78d57046a3a3b8f8d7b0bb059, type: 3}
+  generateCaves: 1
   surfaceValue: 0.25
   worldSize: 50
-  caveFreq: 0.1
-  terrainFreq: 0.05
-  heightMultiplier: 10
-  heightAddition: 20
-  seed: 0
+  caveFreq: 0.08
+  terrainFreq: 0.04
+  heightMultiplier: 25
+  heightAddition: 40
+  seed: -2000
   noiseTexture: {fileID: 0}
 --- !u!4 &1084588983
 Transform:
@@ -5748,6 +5752,54 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &1506011858
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1506011860}
+  - component: {fileID: 1506011859}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 0
+--- !u!114 &1506011859
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1506011858}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e22dcaef7dda24076920bc1d58349203, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  prefab_plains: {fileID: 7825967121236080026, guid: 574f326ccd5d74e08919155795b2ef6f, type: 3}
+  prefab_forest: {fileID: 1469007292071457327, guid: c8c4d9e7b5d77447c9b5fc9f3e70d5b8, type: 3}
+  prefab_hills: {fileID: 6286066666397305656, guid: b3ca0e8fb6fd94e82b8042a8d3f77388, type: 3}
+  prefab_mountains: {fileID: 6149970324855478654, guid: ef274dedee5a54ccb989a83e8e68a4aa, type: 3}
+--- !u!4 &1506011860
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1506011858}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 4
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1579135563
 GameObject:

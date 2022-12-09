@@ -4,14 +4,21 @@ using UnityEngine;
 
 public class WorldGeneration : MonoBehaviour
 {
-
     [Header("Tile Atlas")]
     public TileAtlas tileAtlas;
-    
+    public float seed;
+
+    public BiomeClass[] biomes;
+
+
+    [Header("Biomes")]
+    public float biomeFrequency;
+    public Gradient biomeColors; // Gradient 컬러에 변화
+    public Texture2D biomeMap;
 
     [Header("Generation Settings")]
     public int chunkSize = 16;
-    public int worldSize = 50; // 월드 크기
+    public int worldSize = 100; // 월드 크기
     public int dirtLayerHeight = 5;
     public bool generateCaves = true; // 동굴생성 bool
     public float surfaceValue = 0.25f;
@@ -21,63 +28,65 @@ public class WorldGeneration : MonoBehaviour
     [Header("Noise Settings")]
     public float caveFreq = 0.05f; // 동굴 빈도
     public float terrainFreq = 0.05f;
-    public float seed;
     public Texture2D caveNoiseTexture;
 
     [Header("Ore Settings")]
-    public float coalRarity;
-    public float coalSize;
-    public float ironRarity, ironSize;
-    public float goldRarity, goldSize;
-    public float diamondRarity, diamondSize;
-    public Texture2D coalSpread;
-    public Texture2D ironSpread;
-    public Texture2D goldSpread;
-    public Texture2D diamondSpread;
+    public OreClasses[] ores;
 
     private GameObject[] worldChunks;
     private List<Vector2> worldTiles = new List<Vector2>();
 
     private void OnValidate()
     {
-        if (caveNoiseTexture == null)
-        {
-            caveNoiseTexture = new Texture2D(worldSize, worldSize);
-            coalSpread = new Texture2D(worldSize, worldSize);
-            ironSpread = new Texture2D(worldSize, worldSize);
-            goldSpread = new Texture2D(worldSize, worldSize);
-            diamondSpread = new Texture2D(worldSize, worldSize);
-        }
-
-        GenerateNoiseTexture(caveFreq, surfaceValue, caveNoiseTexture);
-        //광물들
-        GenerateNoiseTexture(coalRarity, coalSize, coalSpread);
-        GenerateNoiseTexture(ironRarity, ironSize, ironSpread);
-        GenerateNoiseTexture(goldRarity, goldSize, goldSpread);
-        GenerateNoiseTexture(diamondRarity, diamondSize, diamondSpread);
+        DrawTextures();
     }
 
     private void Start()
     {
         seed = Random.Range(-10000, 10000);
-        if (caveNoiseTexture == null)
-        {
-            caveNoiseTexture = new Texture2D(worldSize, worldSize);
-            coalSpread = new Texture2D(worldSize, worldSize);
-            ironSpread = new Texture2D(worldSize, worldSize);
-            goldSpread = new Texture2D(worldSize, worldSize);
-            diamondSpread = new Texture2D(worldSize, worldSize);
-        }
 
-        GenerateNoiseTexture(caveFreq, surfaceValue ,caveNoiseTexture);
-        //광물들
-        GenerateNoiseTexture(coalRarity, coalSize , coalSpread);
-        GenerateNoiseTexture(ironRarity, ironSize , ironSpread);
-        GenerateNoiseTexture(goldRarity, goldSize , goldSpread);
-        GenerateNoiseTexture(diamondRarity, diamondSize , diamondSpread);
+        DrawTextures();
 
         CreateChunks();
         GenerateTerrain();
+    }
+
+    public void DrawTextures()
+    {
+
+        biomeMap = new Texture2D(worldSize, worldSize);
+        DrawBiomeTexture();
+
+        for (int i = 0; i < biomes.Length; i++)
+        {
+            biomes[i].caveNoiseTexture = new Texture2D(worldSize, worldSize);
+            for(int o = 0; o < biomes[i].ores.Length; o++)
+            {
+                biomes[i].ores[o].spreadTexture = new Texture2D(worldSize, worldSize);
+            }
+
+            GenerateNoiseTexture(biomes[i].caveFreq, biomes[i].surfaceValue, biomes[i].caveNoiseTexture);
+
+            for (int o = 0; o < biomes[i].ores.Length; o++)
+            {
+                GenerateNoiseTexture(biomes[i].ores[o].rarity, biomes[i].ores[o].size, biomes[i].ores[o].spreadTexture);
+            }
+        }
+    }
+
+    public void DrawBiomeTexture()
+    {
+        for (int x = 0; x < biomeMap.width; x++)
+        {
+            for (int y = 0; y < biomeMap.height; y++)
+            {
+                float v = Mathf.PerlinNoise((x + seed) * biomeFrequency, (y + seed) * biomeFrequency);
+                Color col = biomeColors.Evaluate(v);
+                biomeMap.SetPixel(x, y, col);
+            }
+        }
+
+        biomeMap.Apply();
     }
 
     public void CreateChunks()
@@ -110,39 +119,40 @@ public class WorldGeneration : MonoBehaviour
 
             for (int y = 0; y < height; y++)
             {
-                Sprite tileSprite; // 타일 생성 하는곳
+                Sprite[] tileSprites; // 타일 생성 하는곳
                 if (y < height - dirtLayerHeight)
                 {
-                    if (coalSpread.GetPixel(x, y).r > 0.5f)
-                        tileSprite = tileAtlas.coal.tileSprite;
-                    else if (ironSpread.GetPixel(x, y).r > 0.5f)
-                        tileSprite = tileAtlas.iron.tileSprite;
-                    else if (goldSpread.GetPixel(x, y).r > 0.5f)
-                        tileSprite = tileAtlas.gold.tileSprite;
-                    else if (diamondSpread.GetPixel(x, y).r > 0.5f)
-                        tileSprite = tileAtlas.diamond.tileSprite;
-                    else
-                        tileSprite = tileAtlas.stone.tileSprite;
+                    tileSprites = tileAtlas.stone.tileSprites;
+
+                    if (ores[0].spreadTexture.GetPixel(x, y).r > 0.5f && height - y > ores[0].maxSpawnHeight)
+                        tileSprites = tileAtlas.coal.tileSprites;
+                    if (ores[1].spreadTexture.GetPixel(x, y).r > 0.5f && height - y > ores[1].maxSpawnHeight)
+                        tileSprites = tileAtlas.iron.tileSprites;
+                    if (ores[2].spreadTexture.GetPixel(x, y).r > 0.5f && height - y > ores[2].maxSpawnHeight)
+                        tileSprites = tileAtlas.gold.tileSprites;
+                    if (ores[3].spreadTexture.GetPixel(x, y).r > 0.5f && height - y > ores[3].maxSpawnHeight)
+                        tileSprites = tileAtlas.diamond.tileSprites;
+                    //ores[0] 석탄 ores[1] 철 ores[2] 금 ores[3] 다이아몬드
                 }
                 else if(y < height - 1)
                 {
-                    tileSprite = tileAtlas.dirt.tileSprite;
+                    tileSprites = tileAtlas.dirt.tileSprites;
                 }
                 else
                 {
                     // 가장높은 타일스프라이트
-                    tileSprite = tileAtlas.grass.tileSprite;
+                    tileSprites = tileAtlas.grass.tileSprites;
                 }
                 if (generateCaves)
                 {
                     if (caveNoiseTexture.GetPixel(x, y).r > 0.5f)// 동굴생성
                     {
-                        PlaceTile(tileSprite, x, y);
+                        PlaceTile(tileSprites, x, y);
                     }
                 }
                 else
                 {
-                    PlaceTile(tileSprite, x, y);
+                    PlaceTile(tileSprites, x, y);
                 }
             }
         }
@@ -166,21 +176,28 @@ public class WorldGeneration : MonoBehaviour
         noiseTexture.Apply();
     }
 
-    public void PlaceTile(Sprite tileSprite, int x, int y)
+    public void PlaceTile(Sprite[] tileSprites, int x, int y)
     {
-        GameObject newTile = new GameObject();
+        if (!worldTiles.Contains(new Vector2Int(x, y)))
+        {
+            GameObject newTile = new GameObject();
 
-        float chunkCoord = (Mathf.Round(x / chunkSize) * chunkSize);
-        chunkCoord /= chunkSize;
+            float chunkCoord = (Mathf.Round(x / chunkSize) * chunkSize);
+            chunkCoord /= chunkSize;
 
-        newTile.transform.parent = worldChunks[(int)chunkCoord].transform;
+            newTile.transform.parent = worldChunks[(int)chunkCoord].transform;
 
 
-        newTile.AddComponent<SpriteRenderer>();
-        newTile.GetComponent<SpriteRenderer>().sprite = tileSprite;
-        newTile.name = tileSprite.name;
-        newTile.transform.position = new Vector2(x + 0.5f, y + 0.5f);
+            newTile.AddComponent<SpriteRenderer>();
 
-        //worldTiles.Add(newTile.transform.position - (Vector3.one * 0.5f)); // 나무 생성에 쓰임.
+            int spriteIndex = Random.Range(0, tileSprites.Length);
+            newTile.GetComponent<SpriteRenderer>().sprite = tileSprites[spriteIndex];
+
+
+            newTile.name = tileSprites[0].name;
+            newTile.transform.position = new Vector2(x + 0.5f, y + 0.5f);
+
+            //worldTiles.Add(newTile.transform.position - (Vector3.one * 0.5f)); // 나무 생성에 쓰임.
+        }
     }
 }

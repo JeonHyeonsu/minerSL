@@ -15,6 +15,8 @@ MonoBehaviour:
   grass: {fileID: 11400000, guid: 392bae45f11e2490ea470562e175b66e, type: 2}
   dirt: {fileID: 11400000, guid: 3b9b3ad95c72c421c9660dc0912919f4, type: 2}
   stone: {fileID: 11400000, guid: 13b088fb5080c45e1833f8a0b95af044, type: 2}
+  snow: {fileID: 11400000, guid: 029f17cc7af084c0f94e92d9ba99a003, type: 2}
+  sand: {fileID: 11400000, guid: 1e1ce0bb05deb4e47a28300b1ac8eb49, type: 2}
   coal: {fileID: 11400000, guid: 09aa454b15e4640f0a4db71a7ae75284, type: 2}
   iron: {fileID: 11400000, guid: 286c69a2a09db4981b43bd914a2e3982, type: 2}
   gold: {fileID: 11400000, guid: 79b7aa400641c4ba89215162092bbd7b, type: 2}

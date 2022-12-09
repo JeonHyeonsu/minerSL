@@ -13,4 +13,6 @@ MonoBehaviour:
   m_Name: Iron
   m_EditorClassIdentifier: 
   tileName: Iron
-  tileSprite: {fileID: 21300000, guid: 20937f3b641ca498c9fe2d511f78cda6, type: 3}
+  tileSprites:
+  - {fileID: 21300000, guid: c177d3b834fa1411f92ea28472758f13, type: 3}
+  - {fileID: 21300000, guid: 20937f3b641ca498c9fe2d511f78cda6, type: 3}
